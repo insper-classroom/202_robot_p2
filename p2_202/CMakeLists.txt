@@ -9,7 +9,7 @@ project(p2_202)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
-  rospyf
+  rospy
   std_msgs
 )
 

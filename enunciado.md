@@ -238,7 +238,7 @@ Depois o controlador do braço:
 
 Depois o seu código:
 
-    rosrun p1_202 Q3.py
+    rosrun p2_202 Q3.py
 
 
 

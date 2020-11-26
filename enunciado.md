@@ -33,6 +33,7 @@ rucoes_setup.md))
 * Questões de esclarecimento geral podem ser perguntadas no chat do Teams
 * Se você estiver em casa pode fazer pausas e falar com seus familiares, mas não pode receber ajuda na prova.
 * É proibido colaborar ou pedir ajuda a colegas ou qualquer pessoa que conheça os assuntos avaliados nesta prova.
+* Os exercícios admitem diversas estratégias de resolução. A prova de cada aluno é única
 
 
 Existe algumas dicas de referência rápida de setup [instrucoes_setup.md](instrucoes_setup.md)
@@ -53,12 +54,33 @@ Você precisa deste vídeo para a Questão 1: Salve na pasta Q1
 
 ## Questão 1  (3.33 pontos)
 
-Você deve fazer um programa que lê código de cores de resistores e apresenta sempre a leitura correta a partir do vídeo.
+Você deve fazer um programa que lê código de cores de resistores de 4 bandas e apresenta sempre a leitura correta a partir do vídeo.
 
 
 #### Orientações
 
 Trabalhe no arquivo `q1/q1.py`. Este exercício **não precisa** de ROS. Portanto pode ser feito até em Mac ou Windows
+                                                            
+Simplificações:
+* A faixa 2 vai estar sempre preta em todos os casos. Você não precisa detectar
+* Na faixa 1 e na faixa 3 os valores 0, 1, 8 e 9 nunca ocorrem
+* A tolerância da faixa 4 é sempre a mesma de $+-5\%$ e esta faixa sempre vai estar prata
+* Os resistores estarão sempre na horizontal
+
+
+|     |     |
+| --- | --- |
+| Faixa | Significado |
+| Faixa 1 | Dezena (nunca 0-1-8-9) |
+| Faixa 2 | Unidade (sempre preto) |
+| Faixa 3 | Multiplicador (nunca 0-1-8-9) |
+| Faixa 4 | Tolerância sempre cinza |
+
+
+Dica:  a função `sorted` do Python aceita uma função de ordenação.
+
+
+
 
 Você vai notar que este programa roda o vídeo `resistores.mp4`. Baixe o vídeo [neste endereço](https://github.com/Insper/robot20/raw/master/media/resistores.mp4)
 
@@ -82,6 +104,26 @@ Casos intermediários ou omissos da rubrica serão decididos pelo professor.
 
 ## Questão 2  (3.33 pontos)
 
+Você precisa desenvolver um programa que avalia tabuleiros de jogo da velha.
+
+Regras:
+* Caso ninguém tenha vencido, seu programa deve imprimir na tela a mensagem `Sem vencedor`
+* Caso o time que está com os círculos tenha vencido, deve imprimir **BOLINHAS VENCEM**
+* Caso o time que está com o X tenha vencido, deve imprimir **X VENCEM**
+* Caso o tabuleiro mostre que ambos os times estão em posição vitoriosa, deve imprimir os dois
+
+Além de imprimir **na tela** quem venceu, precisa imprimir **na tela ou no terminal** uma explicação de quais casas foram ocupadas para permitir a vitoria
+
+Exemplo: 
+
+<img width=50% src="./jogo_velha_explicacao.png"></img>
+
+
+
+
+
+
+
 
 
 
@@ -94,11 +136,6 @@ Você vai notar que este programa roda o vídeo `jogovelha.mp4`. Baixe o vídeo 
 
 #### O que você deve fazer:
 
-De acordo com seu animal e caixa designados, faça o seguinte.
-
-Imprima a mensagem **DENTRO* na tela, sempre que o animal designado estiver 100% dentro da caixa designada.
-
-Quando a condição acima não for verdadeira, seu programa não precisa fazer nada.  
 
 Dica: Pode ser interessante estudar o exemplo [./q2/filtro_corner.py] que esta na pasta. 
 

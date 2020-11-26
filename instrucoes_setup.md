@@ -13,11 +13,13 @@ Preficar executar as questões usando o comando `rosrun`.
 
 ## Teleop
 
-Sempre que usar o  `teleop` encerre o programa logo em seguida.  Enquanto estiver aberto o `teleop` ficará enviando comandos de velocidade para o robô, conflitando com seus programas que controlawm o robô. 
+Sempre que usar o  `teleop` encerre o programa logo em seguida.  Enquanto estiver aberto o `teleop` ficará enviando comandos de velocidade para o robô, conflitando com seus programas que controlam o robô. 
 
 Lembrando que para lançar o teleop faça: 
 
     roslaunch turtlebot3_teleop turtlebot3_teleop_key.launch
+
+Feche o `teleop` depois de usar.
 
 
 ## catkin_make
@@ -38,7 +40,7 @@ O código deve sempre ser baixado na pasta `cd ~/catkin_make/src` :
 
 Certifique-se de que seus scripts Python são executáveis
 
-    roscd p1_202
+    roscd p2_202
     cd scripts
     chmod a+x *py
 
@@ -46,7 +48,7 @@ Certifique-se de que seus scripts Python são executáveis
 
 Para executar arquivos do ROS, faça:
 
-    rosrun p1_202 arquivo.py 
+    rosrun p2_202 arquivo.py 
 
 Onde `arquivo.py` é algum script Python executável que você deve ter na pasta `sim202/scripts`.
 

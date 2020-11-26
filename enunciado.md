@@ -76,6 +76,8 @@ Simplificações:
 | Faixa 3 | Multiplicador (nunca 0-1-8-9) |
 | Faixa 4 | Tolerância sempre cinza |
 
+Conforme você deve ter visto nas disciplinas de *Instrumentação e Medição* e *Acionamentos Elétricos* 
+
 
 Dica:  a função `sorted` do Python aceita uma função de ordenação.
 
@@ -114,11 +116,26 @@ Regras:
 
 Além de imprimir **na tela** quem venceu, precisa imprimir **na tela ou no terminal** uma explicação de quais casas foram ocupadas para permitir a vitoria
 
+
+
+
 Exemplo: 
+
+Um possível tabuleiro:
 
 <img width=50% src="./jogo_velha_explicacao.png"></img>
 
+Considere que os índices são assim
 
+<img width=50% src="./jogo_velha_indices.png"></img>
+
+**Desta forma, para o exemplo acima, a saída na tela seria:*
+
+BOLINHAS vencem
+
+**Na tela ou no console:**
+
+BOLINHAS vencem. Posição: `(2,0), (1,1), (0,2)``
 
 
 
@@ -137,7 +154,8 @@ Você vai notar que este programa roda o vídeo `jogovelha.mp4`. Baixe o vídeo 
 #### O que você deve fazer:
 
 
-Dica: Pode ser interessante estudar o exemplo [./q2/filtro_corner.py] que esta na pasta. 
+Dica: Pode ser interessante rever filtros lineares e detectores de cantos. Mas dá para resolver sem este recurso
+
 
 |Resultado| Conceito| 
 |---|---|
@@ -153,15 +171,15 @@ Casos intermediários ou omissos da rubrica serão decididos pelo professor.
 
 
 
-## Questão 3 (3.33 pontos)
-
+## Questões de ROS
 
 **Atenção: ** 
 
-Para fazer estra questão você precisa ter o `my_simulation` atualizado.
+Para fazer estra questão você precisa ter o `my_simulation` e o `mybot_description` atualizado.
 
     cd ~/catkin_ws/src
     cd my_simulation
+    git stash
     git pull
 
 Ou então se ainda não tiver:
@@ -169,42 +187,58 @@ Ou então se ainda não tiver:
     cd ~/catkin_ws/src
     git clone https://github.com/arnaldojr/my_simulation.git
 
+Para o mybot_description:
+
+    cd ~/catkin_ws/src
+    cd mybot_description
+    git stash
+    git pull
+
+Ou então se ainda não tiver:
+
+    cd ~/catkin_ws/src
+    git clone https://github.com/arnaldojr/mybot_description
+
+
+
 Em seguida faça o [catkin_make](./instrucoes_setup.md). 
 
 
+## Questão 3
+
 Para executar o cenário, faça:
 
-    roslaunch my_simulation novas_formas.launch
+    roslaunch my_simulation pista_u.launch
 
 
 Seu robô está num cenário como o que pode ser visto na figura: 
 
-<img src="./formas.png"></img>
-
-ge_1_launch.png" width=50%>
+<img src="./pista_u_ids.jpg" width=75%></img>
 
 
 #### O que é para fazer
 
-De acordo com a tabela abaixo, você tem uma cor preferencial.
+Faça o robô seguir a pista amarela até encontrar o ID 20. Quando ele encontrar o ID 20 deve levantar as mãos para cima e começar a girar ao redor de seu próprio eixo. 
 
-<img src="./Q3_cores.png"></img>
+Você e seus colegas podem reusar o próprio projeto. 
 
-Faça o robô girar até localizar o cubo da sua cor adequada. 
-
-Quando o robô estiver centralizado no cubo, deve avançar em frente e parar quando estiver a uma distância de 1.5m do cubo. Esta distância deve ser controlada pelo laser. 
-
+**Mas não podem se comunicar nem colaborar durante a prova**
 
 #### Detalhes de como rodar
 
 
-O código para este exercício está em: `p1_202/scripts/Q3.py`
+O código para este exercício deve estar em: `p2_202/scripts/Q3.py`
 
 Para rodar, recomendamos que faça:
 
-    roslaunch my_simulation novas_formas.launch
+    roslaunch my_simulation pista_u.launch
 
-Depois:
+Depois o controlador do braço:
+
+    roslaunch mybot_description mybot_control2.launch 	
+
+
+Depois o seu código:
 
     rosrun p1_202 Q3.py
 
@@ -213,10 +247,11 @@ Depois:
 |Resultado| Conceito| 
 |---|---|
 | Não executa | 0 |
-| Consegue filtrar a cor certa| 0.75|
-| Além de filtrar a cor, centraliza no cubo certo | 1.5|
-| Consegue ler o laser e usar isso para o controle | 2.4 |
-| Funciona perfeitamente | 3.33|
+| Filtra o amarelo| 0.5|
+| Analisa a imagem do amarelo e toma decisão para dirigir | 1.0|
+| Segue pista | 2.0 |
+|Detecta ARUCO | 2.5|
+| Gira e mexe a garra no final | 3.33|
 
 
 Casos intermediários ou omissos da rubrica serão decididos pelo professor.
@@ -226,30 +261,23 @@ Casos intermediários ou omissos da rubrica serão decididos pelo professor.
 ## Questão 4 (3.33 pontos)
 
 
-Seu robô está num cenário vazio.
+Seu robô está no cenário visível abaixo:
 
 
-    roslaunch turtlebot3_gazebo turtlebot3_empty_world.launch
+    roslaunch turtlebot3_gazebo rampa.launch
 
 
 
 #### O que é para fazer
 
+Faça o robô seguir a pista e parar perto do bloco azul do final.
 
-Crie uma função que aceita como parâmetro um valor n maior  que 3.
+Cuidado que a pista é escorregadia.
 
-Faça o robô desenhar um polígono de n lados no chão. Cada lado do polígono deve ter 1.2m.  
-
-Sabe-que que cada ângulo externo de um polígono de raio n deve ter $360/n$ . Por exemplo na figura a seguir cada ângulo externo do pentágono vale 72 graus.
-
-<img src="./angulos_externos.png"></>
-
-
-Você precisa usar a odometria para se assegurar que a orientação (ângulo) está correto mas *não precisa* para garantir o comprimento das arestas.
-
-Seu código deve ser flexível, mas para testes adote $n=5$ fixo. 
-
-Você pode assumir que o robô começa sempre em (0,0). No Gazebo aperte Ctrl R para fazê-lo voltar a esta posição.
+Sensores que você pode usar: 
+* Camera
+* Laser 
+* IMU
 
 #### Detalhes de como rodar
 
@@ -269,9 +297,9 @@ Depois:
 |Resultado| Conceito| 
 |---|---|
 | Não executa | 0 |
-| Consegue calcular o ângulo externo corretamente | 0.5 |
-| Consegue fazer o polígono sem controlar pela odometria | 1.5 |
-| Pega o vento da odometria mas o resultado ainda não é perfeito | 2.5|
+| Faz o robô chegar ao fim em malha aberta - só com velocidades | 1.0 |
+| Usa algum sensor para alinhar o robô | 2.0 |
+| Usa mais de um sensor para alinhar e parar  mas o resultado não é perfeito | 2.8|
 | Funciona perfeitamente | 3.33|
 
 

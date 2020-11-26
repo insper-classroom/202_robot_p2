@@ -261,7 +261,7 @@ Casos intermediários ou omissos da rubrica serão decididos pelo professor.
 Seu robô está no cenário visível abaixo:
 
 
-    roslaunch turtlebot3_gazebo rampa.launch
+    roslaunch my_simulation rampa.launch
 
 
 
@@ -283,11 +283,11 @@ O código para este exercício está em: `p1_202/scripts/Q4.py`
 
 Para rodar, recomendamos que faça:
 
-    roslaunch turtlebot3_gazebo turtlebot3_empty_world.launch
+    roslaunch my_simulation rampa.launch
 
 Depois:
 
-    rosrun p1_202 Q4.py
+    rosrun p2_202 Q4.py
 
 
 

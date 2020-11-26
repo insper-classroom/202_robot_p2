@@ -42,10 +42,6 @@ Existe algumas dicas de referência rápida de setup [instrucoes_setup.md](instr
 
 Se você tiver alguma evidência de fraude cometida nesta prova, [use este serviço de e-mail anônimo](https://www.guerrillamail.com/pt/compose)  para informar ao professor.  Ou [este formulário](https://forms.gle/JPhqjPmuKAHxmvwZ9)
 
-# Setup 
-
-Você precisa deste vídeo para a Questão 1: Salve na pasta Q1
-
 
 
 
@@ -260,6 +256,7 @@ Casos intermediários ou omissos da rubrica serão decididos pelo professor.
 
 ## Questão 4 (3.33 pontos)
 
+<img src="rampa.jpg"> width=50%></img>
 
 Seu robô está no cenário visível abaixo:
 

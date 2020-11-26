@@ -52,6 +52,8 @@ Se você tiver alguma evidência de fraude cometida nesta prova, [use este servi
 
 Você deve fazer um programa que lê código de cores de resistores de 4 bandas e apresenta sempre a leitura correta a partir do vídeo.
 
+![](./resistor_explicacao.png)
+
 
 #### Orientações
 

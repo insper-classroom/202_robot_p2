@@ -23,8 +23,14 @@ def center_of_mass(mask):
     """ Retorna uma tupla (cx, cy) que desenha o centro do contorno"""
     M = cv2.moments(mask)
     # Usando a expressão do centróide definida em: https://en.wikipedia.org/wiki/Image_moment
-    cX = int(M["m10"] / M["m00"])
-    cY = int(M["m01"] / M["m00"])
+    
+    m00 = M["m00"]
+
+    if m00 == 0:
+        m00 = 1
+
+    cX = int(M["m10"] / m00)
+    cY = int(M["m01"] / m00)
     return [int(cX), int(cY)]
 
 def crosshair(img, point, size, color):
@@ -36,6 +42,24 @@ def crosshair(img, point, size, color):
     cv2.line(img,(x - size,y),(x + size,y),color,3)
     cv2.line(img,(x,y - size),(x, y + size),color,3)
 
+def morpho_limpa(mask, tamanho):
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(tamanho,tamanho))
+    mask = cv2.morphologyEx( mask, cv2.MORPH_OPEN, kernel )
+    mask = cv2.morphologyEx( mask, cv2.MORPH_CLOSE, kernel )    
+    return mask
+
+def auto_canny(image, sigma=0.33):
+    # compute the median of the single channel pixel intensities
+    v = np.median(image)
+
+    # apply automatic Canny edge detection using the computed median
+    lower = int(max(0, (1.0 - sigma) * v))
+    upper = int(min(255, (1.0 + sigma) * v))
+    edged = cv2.Canny(image, lower, upper)
+
+    # return the edged image
+    return edged
+
 ### 
 
 def gray_to_bgr(gray):
@@ -43,17 +67,68 @@ def gray_to_bgr(gray):
 
 
 def acha_contornos(canal_red, p1, p2):
+
+    matriz = np.zeros((3,3), dtype=np.uint8)
+
     contornos, arvore = cv2.findContours(canal_red.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)     
 
+    temp = gray_to_bgr(canal_red)
+
     for c in contornos: 
+        x,y = center_of_mass(c)
+        lin, col = onde_velha(p1, p2, (x,y))
+
+        matriz[lin][col] = 1
+
+        crosshair(temp, (x,y), 9, (255,0,0))
+
+    cv2.drawContours(temp, contornos, -1, [0, 0, 255], 3)
+
+    cv2.imshow("contornos", temp)
+
+    return matriz
 
 
-
+def onde_terco(minimo, maximo, valor):
+    passo = (maximo - minimo)/3
+    posicao = int((valor - minimo)/passo) 
+    return posicao
 
 
 def onde_velha(p1, p2, p):
-    return (1,1)
+    linha = onde_terco(p1[0], p2[0], p[0])
+    coluna = onde_terco(p1[1], p2[1], p[1])
+    return (linha,coluna)
 
+def refina_circulos(red, matriz, p1, p2):
+    mat = matriz.copy()
+    mask_limiar = red
+    bordas = auto_canny(mask_limiar)
+    circles=cv2.HoughCircles(image=bordas,method=cv2.HOUGH_GRADIENT,dp=2.5,minDist=40,param1=50,param2=100,minRadius=5,maxRadius=150)
+    mask_limiar_rgb = cv2.cvtColor(mask_limiar, cv2.COLOR_GRAY2RGB)
+    bordas_rgb = cv2.cvtColor(bordas, cv2.COLOR_GRAY2RGB)
+
+    output =  bordas_rgb
+
+    if circles is not None:        
+        circles = np.uint16(np.around(circles))
+        for i in circles[0,:]:
+            # draw the outer circle
+
+            x = i[0]
+            y = i[1]
+
+            c = (x, y)
+
+            cv2.circle(output,(i[0],i[1]),i[2],(0,255,0),2)
+            # draw the center of the circle
+            cv2.circle(output,(i[0],i[1]),2,(0,0,255),3)    
+            
+            # Aqui dentro - corrige a matriz
+            lin, col = onde_velha(p1, p2, c)
+            mat[lin][col] = 2 # 2 e codigo para bolinha
+    cv2.imshow("transformada de hough", output)
+    return mat
 
 
 
@@ -65,6 +140,8 @@ def processa(bgr_in):
 
     g[g > limiar] = 255   
     g[g < limiar] = 0
+
+    g = morpho_limpa(g, 3)
 
     linhas, colunas = np.where(g == 255)
 
@@ -82,7 +159,10 @@ def processa(bgr_in):
 
     g_bgr = gray_to_bgr(g)
 
-    cv2.rectangle(g_bgr, (x_min, y_min), (x_max, y_max), color=(0,255,0))
+    pmin = (x_min, y_min)
+    pmax = (x_max, y_max)
+
+    cv2.rectangle(g_bgr, pmin , pmax, color=(0,255,0))
 
     saida = g_bgr
 
@@ -94,15 +174,18 @@ def processa(bgr_in):
     r[r > limiar_red] = 255   
     r[r < limiar_red] = 0
 
+    r = morpho_limpa(r, 3)
+
     r_bgr = gray_to_bgr(r)
 
     saida = r_bgr
 
-    matriz = acha_contornos(r)
+    matriz = acha_contornos(r, pmin, pmax)
 
+    matriz = refina_circulos(r, matriz, pmin, pmax)
 
-
-
+    print("matriz") 
+    print(matriz.T)
     return saida
     
 

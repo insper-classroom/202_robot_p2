@@ -156,14 +156,16 @@ def roda_todo_frame(imagem):
             for i in range(len(ids)):
                 print('ID: {}'.format(ids[i]))
 
-                ids_vistos.append(ids[i])
 
+                # Vejam este notebook para entender os índices abaixo: 
+                # https://github.com/Insper/robot21.1/blob/main/projeto/aruco/aruco.ipynb
+                if ids[i] == 20: 
 
-                #             if len(corners) > 0: 
-                    #
-                    #tamanho = corners[0][0][0] - corners[0][1][0]
+                    tamanho = corners[i][0][1] - corners[i][0][0]
 
-                    #if tamanho > tamanho_min: 
+                    if tamanho > tamanho_min:
+                        ids_vistos.append(ids[i])
+
                     
         cv2.waitKey(1)
     except CvBridgeError as e:

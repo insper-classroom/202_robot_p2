@@ -11,6 +11,9 @@ from __future__ import print_function, division
 # Depois o controlador do braço:
 #
 #    roslaunch mybot_description mybot_control2.launch 	
+
+# This code can be seen running at https://youtu.be/pVpvHJr6G-I
+
 import rospy 
 
 import numpy as np
@@ -51,8 +54,9 @@ def center_of_mass(mask):
     """ Retorna uma tupla (cx, cy) que desenha o centro do contorno"""
     M = cv2.moments(mask)
     # Usando a expressão do centróide definida em: https://en.wikipedia.org/wiki/Image_moment
-    cX = int(M["m10"] / M["m00"])
-    cY = int(M["m01"] / M["m00"])
+    m00 = max(1, M["m00"])
+    cX = int(M["m10"] / m00) # para nao dar divisao por zero quando o contorno tem só 1 px
+    cY = int(M["m01"] / m00)
     return [int(cX), int(cY)]
 
 def crosshair(img, point, size, color):
@@ -149,20 +153,20 @@ def roda_todo_frame(imagem):
 
         ids_vistos.clear()
 
-        tamanho_min = 70
+        tamanho_min = 50
 
-        if len(ids) > 0: 
+        if ids is not None and len(ids) > 0: 
 
             for i in range(len(ids)):
-                print('ID: {}'.format(ids[i]))
+                print('ID: {}'.format(ids[i][0]))
 
 
                 # Vejam este notebook para entender os índices abaixo: 
                 # https://github.com/Insper/robot21.1/blob/main/projeto/aruco/aruco.ipynb
-                if ids[i] == 20: 
+                if ids[i][0] == 20: 
 
-                    tamanho = corners[i][0][1] - corners[i][0][0]
-
+                    tamanho = corners[i][0][1][0] - corners[i][0][0][0]
+                    print("Tamanho: {}".format(tamanho))
                     if tamanho > tamanho_min:
                         ids_vistos.append(ids[i])
 
@@ -192,14 +196,18 @@ if __name__=="__main__":
 
     nao_terminou = True 
 
+
+    estado = "INICIAL"
+
+
     while not rospy.is_shutdown():
         ## centro_massa_amarelo 
         ## centro_imagem
 
 
+    # (20 not in ids_vistos) and nao_terminou
 
-
-        if (20 not in ids_vistos) and nao_terminou: 
+        if estado == "SEGUINDO": 
             delta_x = centro_massa_amarelo[0] - centro_imagem[0]
 
             rot = -(delta_x * max_w)/max_delta
@@ -207,15 +215,25 @@ if __name__=="__main__":
             vel = Twist(Vector3(v_frente,0,0), Vector3(0,0,rot))
 
             velocidade_saida.publish(vel)
-        else: 
+
+            if 20 in ids_vistos:
+                estado = "VIU"
+
+        if estado == "INICIAL":
+            velocidade_saida.publish(zero)
+            velocidade_saida.publish(zero)
+            rospy.sleep(1)
+            estado = "SEGUINDO"
+
+        if estado == "VIU": 
             velocidade_saida.publish(zero)
             ombro.publish(1.5)
             rospy.sleep(1)
             velocidade_saida.publish(giro)
-            nao_terminou = False
+            estado = "FINAL"
 
-        if not nao_terminou: 
-            velocidade_saida.publish(giro)            
 
+        if estado == "FINAL":
+            velocidade_saida.publish(giro)
 
         rospy.sleep(0.05)
